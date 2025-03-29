@@ -7,7 +7,7 @@ interface NewsTickerProps {
 
 const NewsTicker: React.FC<NewsTickerProps> = ({ headlines }) => {
   return (
-    <div className="ticker-container">
+    <div className="ticker-container w-full">
       <div className="ticker-content">
         {headlines.map((headline, index) => (
           <React.Fragment key={index}>

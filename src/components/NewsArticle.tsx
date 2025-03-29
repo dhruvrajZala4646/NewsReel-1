@@ -1,6 +1,13 @@
 
-import React from 'react';
-import { ChevronRight, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { ChevronLeft, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from "@/components/ui/carousel";
 
 interface NewsArticleProps {
   article: {
@@ -18,16 +25,73 @@ interface NewsArticleProps {
 }
 
 const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
+  // Add swipe gesture support for closing
+  const [touchStart, setTouchStart] = React.useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
+  
+  // Handle closing animation
+  const [isExiting, setIsExiting] = React.useState(false);
+
+  // Min distance to trigger swipe
+  const minSwipeDistance = 50;
+
+  // Handle swipe right to close
+  const handleSwipeClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match animation duration
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isRightSwipe) {
+      handleSwipeClose();
+    }
+    
+    // Reset values
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  useEffect(() => {
+    // Focus trap to prevent scrolling background
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
-      <div className="bg-muted flex items-center p-4 sticky top-0 z-10">
+    <div 
+      className={`fixed inset-0 bg-background z-50 overflow-y-auto ${
+        isExiting ? 'animate-slide-right' : 'animate-slide-in'
+      }`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div className="bg-muted sticky top-0 z-10 flex items-center justify-between p-4 shadow-sm">
         <button 
           className="flex items-center text-foreground"
-          onClick={onClose}
+          onClick={handleSwipeClose}
         >
-          <ChevronRight className="w-6 h-6 mr-2" />
+          <ChevronLeft className="w-6 h-6 mr-2" />
           <span>Back to feed</span>
         </button>
+        <div className="text-sm text-muted-foreground">{article.date}</div>
       </div>
 
       <div className="max-w-3xl mx-auto pb-24">
@@ -65,30 +129,42 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
           </button>
         </div>
 
-        <div className="article-content">
+        <div className="px-4 md:px-8 py-6">
           <p className="text-lg font-medium mb-6">{article.summary}</p>
-          <div dangerouslySetInnerHTML={{ __html: article.content }} />
+          <div className="space-y-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
         </div>
 
         <div className="px-4 md:px-8 py-6">
           <h3 className="text-xl font-bold mb-4">Related Articles</h3>
-          <div className="flex overflow-x-auto gap-4 pb-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="min-w-[280px] bg-card rounded-lg overflow-hidden flex-shrink-0 shadow-md">
-                <div className="h-32 bg-muted">
-                  <img 
-                    src={`https://picsum.photos/seed/${i + 10}/400/200`} 
-                    alt="Related article"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <span className="text-xs text-muted-foreground">Related</span>
-                  <h4 className="font-bold">Another Interesting News Article {i}</h4>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {[1, 2, 3].map((i) => (
+                <CarouselItem key={i} className="basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <div className="bg-card rounded-lg overflow-hidden flex-shrink-0 shadow-md h-full">
+                    <div className="h-32 bg-muted">
+                      <img 
+                        src={`https://picsum.photos/seed/${i + 10}/400/200`} 
+                        alt="Related article"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <span className="text-xs text-muted-foreground">Related</span>
+                      <h4 className="font-bold">Another Interesting News Article {i}</h4>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-1" />
+            <CarouselNext className="right-1" />
+          </Carousel>
         </div>
       </div>
     </div>

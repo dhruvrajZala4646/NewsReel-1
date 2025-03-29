@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import BottomNavigation from '@/components/BottomNavigation';
 import NewsTicker from '@/components/NewsTicker';
+import NewsArticle from '@/components/NewsArticle';
 import { getTrendingArticles, getFeaturedArticles, breakingHeadlines } from '@/lib/data';
 import { useTheme } from '@/context/ThemeContext';
 import { TrendingUp, MessageCircle, Heart } from 'lucide-react';
@@ -12,6 +13,15 @@ const Trending = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const trendingArticles = getTrendingArticles();
   const featuredArticles = getFeaturedArticles();
+  const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
+  
+  const handleArticleClick = (article: any) => {
+    setSelectedArticle(article);
+  };
+  
+  const closeArticle = () => {
+    setSelectedArticle(null);
+  };
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -33,7 +43,8 @@ const Trending = () => {
               {featuredArticles.slice(0, 1).map(article => (
                 <div 
                   key={article.id}
-                  className="relative h-64 md:h-96 rounded-lg overflow-hidden"
+                  className="relative h-64 md:h-96 rounded-lg overflow-hidden cursor-pointer transform hover:scale-[1.01] transition-transform"
+                  onClick={() => handleArticleClick(article)}
                 >
                   <img 
                     src={article.imageUrl} 
@@ -67,7 +78,8 @@ const Trending = () => {
               {trendingArticles.slice(0, 6).map(article => (
                 <div 
                   key={article.id}
-                  className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                  className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleArticleClick(article)}
                 >
                   <div className="h-48 overflow-hidden">
                     <img 
@@ -100,6 +112,13 @@ const Trending = () => {
           </div>
         </div>
       </div>
+      
+      {selectedArticle && (
+        <NewsArticle 
+          article={selectedArticle}
+          onClose={closeArticle}
+        />
+      )}
       
       <BottomNavigation />
     </div>

@@ -95,7 +95,19 @@
   }
 
   .article-content {
-    @apply prose prose-lg prose-slate dark:prose-invert max-w-none px-4 md:px-8 py-6;
+    @apply px-4 md:px-8 py-6 space-y-6 max-w-none;
+  }
+
+  .article-content p {
+    @apply leading-relaxed;
+  }
+
+  .article-content h2 {
+    @apply text-xl font-bold mt-6 mb-3;
+  }
+
+  .article-content img {
+    @apply rounded-md my-4 max-w-full;
   }
 
   .progress-bar {
@@ -128,4 +140,23 @@
 
 .snap-container::-webkit-scrollbar {
   display: none;
+}
+
+/* Slide animations for article and chat */
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slide-right 0.3s ease-out forwards;
 }

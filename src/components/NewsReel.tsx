@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -17,15 +17,22 @@ interface NewsReelProps {
   };
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  onArticleClick?: () => void;
 }
 
-const NewsReel: React.FC<NewsReelProps> = ({ article, onSwipeLeft, onSwipeRight }) => {
+const NewsReel: React.FC<NewsReelProps> = ({ 
+  article, 
+  onSwipeLeft, 
+  onSwipeRight,
+  onArticleClick
+}) => {
   const [progress, setProgress] = useState(0);
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [summaryVisible, setSummaryVisible] = useState(false);
+  const reelRef = useRef<HTMLDivElement>(null);
   
   // Min distance to trigger swipe
   const minSwipeDistance = 50;
@@ -106,8 +113,22 @@ const NewsReel: React.FC<NewsReelProps> = ({ article, onSwipeLeft, onSwipeRight 
     setMouseStart(null);
   };
 
+  const handleContentClick = (e: React.MouseEvent) => {
+    // Prevent click when swiping
+    if (mouseStart !== null) return;
+    
+    // Call the article click handler
+    if (onArticleClick) {
+      onArticleClick();
+    } else if (onSwipeLeft) {
+      // Fallback to swipe left if no click handler
+      onSwipeLeft();
+    }
+  };
+
   return (
     <div 
+      ref={reelRef}
       className="news-reel"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -161,17 +182,33 @@ const NewsReel: React.FC<NewsReelProps> = ({ article, onSwipeLeft, onSwipeRight 
           </button>
         </div>
 
-        <div className="flex gap-2 absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-white/75">
+        <button 
+          className="flex gap-2 absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-white/75 
+                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
+          onClick={onSwipeLeft}
+          aria-label="View full article"
+        >
           <ChevronLeft className="w-6 h-6" />
           <span className="text-sm hidden md:inline">Full Article</span>
-        </div>
+        </button>
         
-        <div className="flex gap-2 absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 text-white/75">
+        <button 
+          className="flex gap-2 absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 text-white/75 
+                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
+          onClick={onSwipeRight}
+          aria-label="Open AI chat"
+        >
           <span className="text-sm hidden md:inline">AI Chat</span>
           <ChevronRight className="w-6 h-6" />
-        </div>
+        </button>
 
-        <div className="progress-bar">
+        <div 
+          className="absolute inset-0 z-0 cursor-pointer"
+          onClick={handleContentClick}
+          aria-hidden="true"
+        ></div>
+
+        <div className="progress-bar w-full">
           <div 
             className="active-progress" 
             style={{ width: `${progress}%` }}
