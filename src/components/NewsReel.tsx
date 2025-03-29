@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import SummaryPopup from './SummaryPopup';
 
 interface NewsReelProps {
   article: {
@@ -32,6 +33,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [summaryVisible, setSummaryVisible] = useState(false);
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const reelRef = useRef<HTMLDivElement>(null);
   
   // Min distance to trigger swipe
@@ -126,6 +128,44 @@ const NewsReel: React.FC<NewsReelProps> = ({
     }
   };
 
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLiked(!liked);
+    
+    // Add heart animation
+    setIsLikeAnimating(true);
+    setTimeout(() => setIsLikeAnimating(false), 500);
+  };
+
+  const handleShareClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Share functionality would go here
+  };
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSaved(!saved);
+  };
+
+  const handleCommentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Comment functionality would go here
+  };
+
+  const handleChatClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onSwipeRight) {
+      onSwipeRight();
+    }
+  };
+
+  const handleFullArticleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onSwipeLeft) {
+      onSwipeLeft();
+    }
+  };
+
   return (
     <div 
       ref={reelRef}
@@ -154,28 +194,47 @@ const NewsReel: React.FC<NewsReelProps> = ({
           <p className="text-xs text-gray-300 mb-6">{article.date}</p>
         </div>
 
-        <div className="absolute right-4 bottom-16 flex flex-col gap-6">
+        <div className="absolute right-4 bottom-28 flex flex-col gap-6">
           <button 
-            className="interaction-button" 
-            onClick={() => setLiked(!liked)}
+            className="interaction-button relative"
+            onClick={handleLikeClick}
           >
-            <Heart className={cn("h-7 w-7", liked ? "fill-red-500 text-red-500" : "")} />
+            <Heart 
+              className={cn(
+                "h-7 w-7 transition-all", 
+                liked ? "fill-red-500 text-red-500" : "",
+                isLikeAnimating ? "scale-125" : ""
+              )} 
+            />
             <span className="text-xs mt-1">{liked ? article.likes + 1 : article.likes}</span>
+            {isLikeAnimating && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Heart 
+                  className="h-12 w-12 text-red-500 fill-red-500 animate-pulse opacity-0" 
+                />
+              </span>
+            )}
           </button>
           
-          <button className="interaction-button">
+          <button 
+            className="interaction-button"
+            onClick={handleCommentClick}
+          >
             <MessageCircle className="h-7 w-7" />
             <span className="text-xs mt-1">{article.comments}</span>
           </button>
           
-          <button className="interaction-button">
+          <button 
+            className="interaction-button"
+            onClick={handleShareClick}
+          >
             <Share className="h-7 w-7" />
             <span className="text-xs mt-1">Share</span>
           </button>
           
           <button 
             className="interaction-button"
-            onClick={() => setSaved(!saved)}
+            onClick={handleSaveClick}
           >
             <Bookmark className={cn("h-7 w-7", saved ? "fill-white" : "")} />
             <span className="text-xs mt-1">Save</span>
@@ -185,7 +244,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
         <button 
           className="flex gap-2 absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-white/75 
                      hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
-          onClick={onSwipeLeft}
+          onClick={handleFullArticleClick}
           aria-label="View full article"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -195,12 +254,19 @@ const NewsReel: React.FC<NewsReelProps> = ({
         <button 
           className="flex gap-2 absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 text-white/75 
                      hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
-          onClick={onSwipeRight}
+          onClick={handleChatClick}
           aria-label="Open AI chat"
         >
           <span className="text-sm hidden md:inline">AI Chat</span>
           <ChevronRight className="w-6 h-6" />
         </button>
+
+        {/* Smart Summary Popup */}
+        <SummaryPopup
+          title={article.title}
+          summary={article.summary}
+          onExpandArticle={onSwipeLeft || (() => {})}
+        />
 
         <div 
           className="absolute inset-0 z-0 cursor-pointer"

@@ -63,9 +63,12 @@ const AiChatAssistant: React.FC<AiChatAssistantProps> = ({ onClose, articleTitle
   }, []);
 
   return (
-    <div className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end ${
-      isExiting ? 'animate-fade-out' : 'animate-fade-in'
-    }`} onClick={handleClose}>
+    <div 
+      className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end ${
+        isExiting ? 'animate-fade-out' : 'animate-fade-in'
+      }`} 
+      onClick={handleClose}
+    >
       <div 
         className={`w-full md:w-96 h-full bg-background flex flex-col ${
           isExiting ? 'animate-slide-right' : 'animate-slide-in'
@@ -81,7 +84,10 @@ const AiChatAssistant: React.FC<AiChatAssistantProps> = ({ onClose, articleTitle
             <span>Back to feed</span>
           </button>
           <h2 className="text-lg font-semibold">AI News Assistant</h2>
-          <button onClick={handleClose}>
+          <button 
+            onClick={handleClose}
+            className="p-1 hover:bg-white/10 rounded-full"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>

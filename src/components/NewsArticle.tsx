@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import ArticleSummary from './ArticleSummary';
 
 interface NewsArticleProps {
   article: {
@@ -110,6 +111,11 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
           </div>
         </div>
 
+        <div className="px-4 md:px-8 pt-6">
+          {/* Add the Smart Summary component */}
+          <ArticleSummary title={article.title} />
+        </div>
+
         <div className="flex justify-center gap-8 py-4 border-b">
           <button className="flex items-center gap-1 text-sm">
             <Heart className="h-5 w-5" />
@@ -129,7 +135,7 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
           </button>
         </div>
 
-        <div className="px-4 md:px-8 py-6">
+        <div className="article-content">
           <p className="text-lg font-medium mb-6">{article.summary}</p>
           <div className="space-y-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
         </div>
