@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 
 interface ListenButtonProps {
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   size?: 'default' | 'sm' | 'lg' | 'icon';
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
@@ -23,10 +23,7 @@ const ListenButton: React.FC<ListenButtonProps> = ({
     <Button
       variant={variant}
       size={size}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
+      onClick={onClick}
       className={cn(
         "hover:bg-news-600/10",
         className
