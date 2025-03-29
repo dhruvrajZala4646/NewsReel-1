@@ -1,0 +1,109 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import BottomNavigation from '@/components/BottomNavigation';
+import NewsTicker from '@/components/NewsTicker';
+import { getTrendingArticles, getFeaturedArticles, breakingHeadlines } from '@/lib/data';
+import { useTheme } from '@/context/ThemeContext';
+import { TrendingUp, MessageCircle, Heart } from 'lucide-react';
+
+const Trending = () => {
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  const trendingArticles = getTrendingArticles();
+  const featuredArticles = getFeaturedArticles();
+  
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      
+      <div className="pt-16 pb-20">
+        <NewsTicker headlines={breakingHeadlines} />
+        
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center gap-2 mb-6">
+            <TrendingUp className="text-news-600 h-6 w-6" />
+            <h1 className="text-2xl font-bold">Trending Now</h1>
+          </div>
+          
+          {/* Featured Articles */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Featured Stories</h2>
+            <div className="grid grid-cols-1 gap-6">
+              {featuredArticles.slice(0, 1).map(article => (
+                <div 
+                  key={article.id}
+                  className="relative h-64 md:h-96 rounded-lg overflow-hidden"
+                >
+                  <img 
+                    src={article.imageUrl} 
+                    alt={article.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6">
+                    <span className="inline-block bg-news-600 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-2">
+                      {article.category}
+                    </span>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{article.title}</h3>
+                    <p className="text-white/80 text-sm md:text-base line-clamp-2 mb-2">{article.summary}</p>
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center text-white/80 gap-1">
+                        <Heart className="h-4 w-4" /> {article.likes}
+                      </span>
+                      <span className="flex items-center text-white/80 gap-1">
+                        <MessageCircle className="h-4 w-4" /> {article.comments}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Top Stories Grid */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Top Stories</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {trendingArticles.slice(0, 6).map(article => (
+                <div 
+                  key={article.id}
+                  className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src={article.imageUrl} 
+                      alt={article.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <span className="inline-block bg-muted text-xs font-medium px-2.5 py-0.5 rounded mb-2 text-muted-foreground">
+                      {article.category}
+                    </span>
+                    <h3 className="font-bold mb-2 line-clamp-2">{article.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{article.summary}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">{article.date}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1 text-sm">
+                          <Heart className="h-4 w-4 text-news-600" /> {article.likes}
+                        </span>
+                        <span className="flex items-center gap-1 text-sm">
+                          <MessageCircle className="h-4 w-4" /> {article.comments}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <BottomNavigation />
+    </div>
+  );
+};
+
+export default Trending;
