@@ -110,8 +110,18 @@ export default {
 				'slide-left': 'slide-left 0.3s ease-out forwards',
 				'slide-right': 'slide-right 0.3s ease-out forwards',
 				'ticker': 'ticker 20s linear infinite',
-			}
+			},
+			typography: {
+				DEFAULT: {
+					css: {
+						maxWidth: 'none',
+					},
+				},
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require('@tailwindcss/typography'),
+	],
 } satisfies Config;
