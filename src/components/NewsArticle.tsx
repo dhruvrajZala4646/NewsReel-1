@@ -1,6 +1,6 @@
 
-import React, { useEffect } from 'react';
-import { ChevronLeft, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft, Heart, MessageCircle, Share, Bookmark, Headphones } from 'lucide-react';
 import { 
   Carousel,
   CarouselContent,
@@ -9,6 +9,8 @@ import {
   CarouselPrevious
 } from "@/components/ui/carousel";
 import ArticleSummary from './ArticleSummary';
+import AudioPlayer from './AudioPlayer';
+import ListenButton from './ListenButton';
 
 interface NewsArticleProps {
   article: {
@@ -23,15 +25,19 @@ interface NewsArticleProps {
     comments: number;
   };
   onClose: () => void;
+  onListen?: (article: any) => void;
 }
 
-const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
+const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose, onListen }) => {
   // Add swipe gesture support for closing
   const [touchStart, setTouchStart] = React.useState<number | null>(null);
   const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
   
   // Handle closing animation
   const [isExiting, setIsExiting] = React.useState(false);
+  
+  // Handle audio player
+  const [isListening, setIsListening] = useState(false);
 
   // Min distance to trigger swipe
   const minSwipeDistance = 50;
@@ -75,6 +81,13 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
     };
   }, []);
 
+  const handleListenClick = () => {
+    setIsListening(true);
+    if (onListen) {
+      onListen(article);
+    }
+  };
+
   return (
     <div 
       className={`fixed inset-0 bg-background z-50 overflow-y-auto ${
@@ -106,7 +119,15 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
             <span className="inline-block bg-news-600 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-2">
               {article.category}
             </span>
-            <h1 className="text-2xl md:text-4xl font-bold text-white">{article.title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl md:text-4xl font-bold text-white flex-1">{article.title}</h1>
+              <ListenButton 
+                onClick={handleListenClick}
+                variant="ghost"
+                size="lg"
+                className="bg-black/20 text-white border-none"
+              />
+            </div>
             <p className="text-sm text-gray-300 mt-2">{article.date}</p>
           </div>
         </div>
@@ -114,6 +135,18 @@ const NewsArticle: React.FC<NewsArticleProps> = ({ article, onClose }) => {
         <div className="px-4 md:px-8 pt-6">
           {/* Add the Smart Summary component */}
           <ArticleSummary title={article.title} />
+          
+          {/* Audio Player */}
+          {isListening && (
+            <div className="my-4 animate-fade-in">
+              <AudioPlayer
+                title={article.title}
+                content={article.content}
+                isMiniplayer={false}
+                onClose={() => setIsListening(false)}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex justify-center gap-8 py-4 border-b">

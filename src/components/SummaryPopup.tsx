@@ -1,16 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, CheckCircle } from 'lucide-react';
+import { ChevronDown, CheckCircle, Headphones } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import ListenButton from './ListenButton';
 
 interface SummaryPopupProps {
   title: string;
   summary: string;
   onExpandArticle: () => void;
+  onListen: () => void;
 }
 
-const SummaryPopup: React.FC<SummaryPopupProps> = ({ title, summary, onExpandArticle }) => {
+const SummaryPopup: React.FC<SummaryPopupProps> = ({ title, summary, onExpandArticle, onListen }) => {
   const [keyTakeaway, setKeyTakeaway] = useState("The most important development in this story is the impact on global policy.");
   
   return (
@@ -42,14 +44,19 @@ const SummaryPopup: React.FC<SummaryPopupProps> = ({ title, summary, onExpandArt
             <h4 className="text-sm font-medium mb-1">Why This Matters:</h4>
             <p className="text-sm text-muted-foreground">{summary}</p>
           </div>
-          <div className="pt-2">
+          <div className="pt-2 flex gap-2">
             <Button 
               onClick={onExpandArticle} 
               variant="outline" 
-              className="w-full"
+              className="flex-1"
             >
               Expand Article
             </Button>
+            <ListenButton 
+              onClick={onListen}
+              variant="secondary"
+              className="flex-1"
+            />
           </div>
         </div>
       </HoverCardContent>

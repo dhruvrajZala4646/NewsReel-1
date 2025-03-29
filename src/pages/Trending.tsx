@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar';
 import BottomNavigation from '@/components/BottomNavigation';
 import NewsTicker from '@/components/NewsTicker';
 import NewsArticle from '@/components/NewsArticle';
+import MiniPlayer from '@/components/MiniPlayer';
+import ListenButton from '@/components/ListenButton';
 import { getTrendingArticles, getFeaturedArticles, breakingHeadlines } from '@/lib/data';
 import { useTheme } from '@/context/ThemeContext';
 import { TrendingUp, MessageCircle, Heart } from 'lucide-react';
@@ -14,6 +16,7 @@ const Trending = () => {
   const trendingArticles = getTrendingArticles();
   const featuredArticles = getFeaturedArticles();
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
+  const [playingArticle, setPlayingArticle] = useState<any | null>(null);
   
   const handleArticleClick = (article: any) => {
     setSelectedArticle(article);
@@ -21,6 +24,21 @@ const Trending = () => {
   
   const closeArticle = () => {
     setSelectedArticle(null);
+  };
+
+  const handleListenClick = (article: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPlayingArticle(article);
+  };
+
+  const handleClosePlayer = () => {
+    setPlayingArticle(null);
+  };
+
+  const handleNextArticle = () => {
+    const currentIndex = trendingArticles.findIndex(article => article.id === playingArticle.id);
+    const nextIndex = (currentIndex + 1) % trendingArticles.length;
+    setPlayingArticle(trendingArticles[nextIndex]);
   };
   
   return (
@@ -55,7 +73,15 @@ const Trending = () => {
                     <span className="inline-block bg-news-600 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-2">
                       {article.category}
                     </span>
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{article.title}</h3>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-xl md:text-2xl font-bold text-white flex-1">{article.title}</h3>
+                      <ListenButton
+                        onClick={(e) => handleListenClick(article, e)}
+                        variant="ghost"
+                        size="sm"
+                        className="bg-black/20 text-white border-none"
+                      />
+                    </div>
                     <p className="text-white/80 text-sm md:text-base line-clamp-2 mb-2">{article.summary}</p>
                     <div className="flex items-center gap-4">
                       <span className="flex items-center text-white/80 gap-1">
@@ -89,9 +115,18 @@ const Trending = () => {
                     />
                   </div>
                   <div className="p-4">
-                    <span className="inline-block bg-muted text-xs font-medium px-2.5 py-0.5 rounded mb-2 text-muted-foreground">
-                      {article.category}
-                    </span>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="inline-block bg-muted text-xs font-medium px-2.5 py-0.5 rounded text-muted-foreground">
+                        {article.category}
+                      </span>
+                      <ListenButton
+                        onClick={(e) => handleListenClick(article, e)}
+                        variant="ghost"
+                        size="sm"
+                        showLabel={false}
+                        className="h-8 w-8 p-0"
+                      />
+                    </div>
                     <h3 className="font-bold mb-2 line-clamp-2">{article.title}</h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{article.summary}</p>
                     <div className="flex justify-between items-center">
@@ -117,6 +152,15 @@ const Trending = () => {
         <NewsArticle 
           article={selectedArticle}
           onClose={closeArticle}
+          onListen={setPlayingArticle}
+        />
+      )}
+      
+      {playingArticle && !selectedArticle && (
+        <MiniPlayer 
+          article={playingArticle}
+          onClose={handleClosePlayer}
+          onNext={handleNextArticle}
         />
       )}
       

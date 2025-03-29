@@ -5,6 +5,7 @@ import NewsArticle from '@/components/NewsArticle';
 import AiChatAssistant from '@/components/AiChatAssistant';
 import BottomNavigation from '@/components/BottomNavigation';
 import Navbar from '@/components/Navbar';
+import MiniPlayer from '@/components/MiniPlayer';
 import { newsArticles } from '@/lib/data';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -16,6 +17,7 @@ const Index = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
+  const [playingArticle, setPlayingArticle] = useState<any | null>(null);
 
   const handleSwipeLeft = () => {
     setShowArticle(true);
@@ -89,6 +91,28 @@ const Index = () => {
     }
   }, [activeArticleIndex, isScrolling, isSnapping]);
 
+  const handleListenClick = (article: any) => {
+    setPlayingArticle(article);
+  };
+
+  const handleClosePlayer = () => {
+    setPlayingArticle(null);
+  };
+
+  const handleNextArticle = () => {
+    const nextIndex = (activeArticleIndex + 1) % newsArticles.length;
+    setPlayingArticle(newsArticles[nextIndex]);
+    
+    // Scroll to the next article
+    if (scrollContainerRef.current) {
+      const reelHeight = window.innerHeight;
+      scrollContainerRef.current.scrollTo({
+        top: nextIndex * reelHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
       <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
@@ -104,6 +128,7 @@ const Index = () => {
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}
             onArticleClick={handleSwipeLeft}
+            onListen={handleListenClick}
           />
         ))}
       </div>
@@ -112,6 +137,7 @@ const Index = () => {
         <NewsArticle 
           article={newsArticles[activeArticleIndex]}
           onClose={closeArticle}
+          onListen={handleListenClick}
         />
       )}
       
@@ -119,6 +145,14 @@ const Index = () => {
         <AiChatAssistant 
           onClose={closeChat}
           articleTitle={newsArticles[activeArticleIndex].title}
+        />
+      )}
+      
+      {playingArticle && !showArticle && (
+        <MiniPlayer 
+          article={playingArticle}
+          onClose={handleClosePlayer}
+          onNext={handleNextArticle}
         />
       )}
       

@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, MessageCircle, Share, Bookmark, ChevronLeft, ChevronRight, Headphones } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SummaryPopup from './SummaryPopup';
+import ListenButton from './ListenButton';
 
 interface NewsReelProps {
   article: {
@@ -19,13 +20,15 @@ interface NewsReelProps {
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   onArticleClick?: () => void;
+  onListen?: (article: any) => void;
 }
 
 const NewsReel: React.FC<NewsReelProps> = ({ 
   article, 
   onSwipeLeft, 
   onSwipeRight,
-  onArticleClick
+  onArticleClick,
+  onListen
 }) => {
   const [progress, setProgress] = useState(0);
   const [liked, setLiked] = useState(false);
@@ -166,6 +169,12 @@ const NewsReel: React.FC<NewsReelProps> = ({
     }
   };
 
+  const handleListenClick = () => {
+    if (onListen) {
+      onListen(article);
+    }
+  };
+
   return (
     <div 
       ref={reelRef}
@@ -184,7 +193,16 @@ const NewsReel: React.FC<NewsReelProps> = ({
         <span className="inline-block bg-news-600 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-2">
           {article.category}
         </span>
-        <h2 className="text-2xl md:text-4xl font-bold mb-2">{article.title}</h2>
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="text-2xl md:text-4xl font-bold">{article.title}</h2>
+          <ListenButton 
+            onClick={handleListenClick}
+            variant="ghost"
+            size="icon"
+            showLabel={false}
+            className="bg-black/20 text-white h-8 w-8"
+          />
+        </div>
         
         <div className={cn(
           "transition-opacity duration-500",
@@ -266,6 +284,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
           title={article.title}
           summary={article.summary}
           onExpandArticle={onSwipeLeft || (() => {})}
+          onListen={handleListenClick}
         />
 
         <div 
