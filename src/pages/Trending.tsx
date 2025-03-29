@@ -10,6 +10,7 @@ import ListenButton from '@/components/ListenButton';
 import { getTrendingArticles, getFeaturedArticles, breakingHeadlines } from '@/lib/data';
 import { useTheme } from '@/context/ThemeContext';
 import { TrendingUp, MessageCircle, Heart } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 
 const Trending = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -26,9 +27,13 @@ const Trending = () => {
     setSelectedArticle(null);
   };
 
-  // Modified to accept an article parameter without requiring an event
   const handleListenClick = (article: any) => {
     setPlayingArticle(article);
+    toast({
+      title: "Now playing",
+      description: `Playing "${article.title}"`,
+      duration: 2000
+    });
   };
 
   const handleClosePlayer = () => {
@@ -82,7 +87,7 @@ const Trending = () => {
                         }}
                         variant="ghost"
                         size="sm"
-                        className="bg-black/20 text-white border-none"
+                        className="bg-news-600/80 text-white border-none shadow-md hover:bg-news-600"
                       />
                     </div>
                     <p className="text-white/80 text-sm md:text-base line-clamp-2 mb-2">{article.summary}</p>
@@ -130,7 +135,7 @@ const Trending = () => {
                         variant="ghost"
                         size="sm"
                         showLabel={false}
-                        className="h-8 w-8 p-0"
+                        className="h-8 w-8 p-0 bg-news-600/10 hover:bg-news-600/20 text-news-600"
                       />
                     </div>
                     <h3 className="font-bold mb-2 line-clamp-2">{article.title}</h3>
@@ -158,7 +163,7 @@ const Trending = () => {
         <NewsArticle 
           article={selectedArticle}
           onClose={closeArticle}
-          onListen={setPlayingArticle}
+          onListen={handleListenClick}
         />
       )}
       

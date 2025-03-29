@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, CheckCircle, Headphones } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronDown, CheckCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import ListenButton from './ListenButton';
@@ -18,10 +18,10 @@ const SummaryPopup: React.FC<SummaryPopupProps> = ({ title, summary, onExpandArt
   return (
     <HoverCard openDelay={500} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <div className="absolute bottom-16 left-0 right-0 z-10 flex justify-center">
+        <div className="absolute bottom-24 left-0 right-0 z-10 flex justify-center">
           <Button 
             variant="ghost" 
-            className="rounded-full px-4 py-2 bg-black/20 backdrop-blur-sm text-white flex gap-2 items-center"
+            className="rounded-full px-4 py-2 bg-black/30 backdrop-blur-sm text-white flex gap-2 items-center hover:bg-black/40"
           >
             <span className="text-sm">Smart Summary</span>
             <ChevronDown className="h-4 w-4" />

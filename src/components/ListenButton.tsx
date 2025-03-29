@@ -23,7 +23,10 @@ const ListenButton: React.FC<ListenButtonProps> = ({
     <Button
       variant={variant}
       size={size}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
       className={cn(
         "hover:bg-news-600/10",
         className

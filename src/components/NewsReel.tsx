@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share, Bookmark, ChevronLeft, ChevronRight, Headp
 import { cn } from '@/lib/utils';
 import SummaryPopup from './SummaryPopup';
 import ListenButton from './ListenButton';
+import { toast } from "@/hooks/use-toast";
 
 interface NewsReelProps {
   article: {
@@ -138,21 +139,47 @@ const NewsReel: React.FC<NewsReelProps> = ({
     // Add heart animation
     setIsLikeAnimating(true);
     setTimeout(() => setIsLikeAnimating(false), 500);
+    
+    // Show toast notification
+    toast({
+      title: liked ? "Removed like" : "Added like",
+      description: liked ? "You've removed your like from this article" : "You've liked this article",
+      duration: 2000,
+    });
   };
 
   const handleShareClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Share functionality would go here
+    
+    // Show toast for share action
+    toast({
+      title: "Share options",
+      description: "Share options would appear here in a production app",
+      duration: 2000,
+    });
   };
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSaved(!saved);
+    
+    // Show toast notification
+    toast({
+      title: saved ? "Removed from saved" : "Saved to bookmarks",
+      description: saved ? "Article removed from your bookmarks" : "Article saved to your bookmarks",
+      duration: 2000,
+    });
   };
 
   const handleCommentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Comment functionality would go here
+    
+    // Show toast for comment action
+    toast({
+      title: "Comments",
+      description: `View ${article.comments} comments on this article`,
+      duration: 2000,
+    });
   };
 
   const handleChatClick = (e: React.MouseEvent) => {
@@ -169,7 +196,8 @@ const NewsReel: React.FC<NewsReelProps> = ({
     }
   };
 
-  const handleListenClick = () => {
+  const handleListenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     if (onListen) {
       onListen(article);
     }
@@ -193,14 +221,14 @@ const NewsReel: React.FC<NewsReelProps> = ({
         <span className="inline-block bg-news-600 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-2">
           {article.category}
         </span>
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-3 mb-2">
           <h2 className="text-2xl md:text-4xl font-bold">{article.title}</h2>
           <ListenButton 
             onClick={handleListenClick}
             variant="ghost"
             size="icon"
             showLabel={false}
-            className="bg-black/20 text-white h-8 w-8"
+            className="bg-news-600/80 text-white h-10 w-10 shadow-md hover:bg-news-600"
           />
         </div>
         
@@ -214,7 +242,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
 
         <div className="absolute right-4 bottom-28 flex flex-col gap-6">
           <button 
-            className="interaction-button relative"
+            className="interaction-button relative bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors"
             onClick={handleLikeClick}
           >
             <Heart 
@@ -235,7 +263,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
           </button>
           
           <button 
-            className="interaction-button"
+            className="interaction-button bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors"
             onClick={handleCommentClick}
           >
             <MessageCircle className="h-7 w-7" />
@@ -243,7 +271,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
           </button>
           
           <button 
-            className="interaction-button"
+            className="interaction-button bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors"
             onClick={handleShareClick}
           >
             <Share className="h-7 w-7" />
@@ -251,7 +279,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
           </button>
           
           <button 
-            className="interaction-button"
+            className="interaction-button bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors"
             onClick={handleSaveClick}
           >
             <Bookmark className={cn("h-7 w-7", saved ? "fill-white" : "")} />
@@ -261,7 +289,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
 
         <button 
           className="flex gap-2 absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 text-white/75 
-                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
+                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/30 hover:bg-black/50"
           onClick={handleFullArticleClick}
           aria-label="View full article"
         >
@@ -271,7 +299,7 @@ const NewsReel: React.FC<NewsReelProps> = ({
         
         <button 
           className="flex gap-2 absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 text-white/75 
-                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/20 hover:bg-black/30"
+                     hover:text-white transition-colors px-4 py-2 rounded-full bg-black/30 hover:bg-black/50"
           onClick={handleChatClick}
           aria-label="Open AI chat"
         >
