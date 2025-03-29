@@ -26,8 +26,8 @@ const Trending = () => {
     setSelectedArticle(null);
   };
 
-  const handleListenClick = (article: any, e: React.MouseEvent) => {
-    e.stopPropagation();
+  // Modified to accept an article parameter without requiring an event
+  const handleListenClick = (article: any) => {
     setPlayingArticle(article);
   };
 
@@ -76,7 +76,10 @@ const Trending = () => {
                     <div className="flex items-center gap-3">
                       <h3 className="text-xl md:text-2xl font-bold text-white flex-1">{article.title}</h3>
                       <ListenButton
-                        onClick={(e) => handleListenClick(article, e)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleListenClick(article);
+                        }}
                         variant="ghost"
                         size="sm"
                         className="bg-black/20 text-white border-none"
@@ -120,7 +123,10 @@ const Trending = () => {
                         {article.category}
                       </span>
                       <ListenButton
-                        onClick={(e) => handleListenClick(article, e)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleListenClick(article);
+                        }}
                         variant="ghost"
                         size="sm"
                         showLabel={false}
